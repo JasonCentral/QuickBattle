@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> My Game </title>
+	</head>
+	<body>
+		<h2 id ="nameTitle"></h2>
+		<div id ="nameForm">
+			<form id = "form1">
+			Enter Your Name to Begin: <input name ="name" type="text"> 
+			<button type = "button" onclick="getName()">Submit</button> 
+			</form>
+		</div>
+		<div id ="interface" style ="display:none">
+			<button type ="button" onclick="toBattle()" style="height:25px; width:200px">Battle</button>
+			<button type ="button" onclick="toInventory()" style="height:25px; width:200px">Inventory</button>
+			<button type ="button" onclick="toShop()" style="height:25px; width:200px">Shop</button>
+		</div>
+		
+		<!-- Battle Divs -->
+		<div id ="battleInterface" style ="display:none">
+			<p id = "HP"></p>
+			<p id = "EXP"></p>
+			<p id = "level"></p>
+			<p id = "damage"></p>
+			<div id ="nextBattle" style ="display:none">
+			<button type ="button" onclick="startBattle()" style ="height:200px; width:600px">Next Battle</button>
+			</div>
+			<div id ="enemyBattle" style ="display:none">
+				<p>---------------------------------------</p>
+				<h3 id ="enemyNumber"></h3>
+				<p id ="enemyHP"></p>
+				<p id ="enemyDamage"></p>
+			</div>
+			<!-- This is for the buttons when battling -->
+			<div id ="inBattleInterface" style ="display:none">
+				<button type ="button" onclick="attack()" style="height:30px; width:300px">Attack!</button>
+				<button type ="button" onclick="flee()" style="height:30px; width:300px">Flee!</button>
+			</div>
+		</div>
+		<!-- Inventory Divs -->
+		<div id ="inventoryInterface" style ="display:none">
+			<h1>YOUR ITEMS</h1>
+			<div id="item1">
+				<p id ="name1" style="display:inline">No Item</p>
+				<p id ="quantity1" style="display:inline"></p>
+				<button id = "use1" type ="button" onclick ="useItem(1)" style="display:none">Use</button>
+				<button id = "equip1" type ="button" onclick ="useItem(1)" style="display:none">Equip</button>
+				<button id = "unequip1" type ="button" onclick ="useItem(1)" style="display:none">Un-Equip</button>
+				<button id = "sell1" type ="button" onclick ="sellItem(1)" style="display:inline">Sell for: 0g</button>
+				<p id ="description1"></p>
+			</div>
+			<div id="item2">
+				<p id ="name2" style="display:inline">No Item</p>
+				<p id ="quantity2" style="display:inline"></p>
+				<button id = "use2" type ="button" onclick ="useItem(2)" style="display:none">Use</button>
+				<button id = "equip2" type ="button" onclick ="useItem(2)" style="display:none">Equip</button>
+				<button id = "unequip2" type ="button" onclick ="useItem(2)" style="display:none">Un-Equip</button>
+				<button id = "sell2" type ="button" onclick ="sellItem(2)" style="display:inline">Sell for: 0g</button>
+				<p id ="description2"></p>
+			</div>
+			<div id="item3">
+				<p id ="name3" style="display:inline">No Item</p>
+				<p id ="quantity3" style="display:inline"></p>
+				<button id = "use3" type ="button" onclick ="useItem(3)" style="display:none">Use</button>
+				<button id = "equip3" type ="button" onclick ="useItem(3)" style="display:none">Equip</button>
+				<button id = "unequip3" type ="button" onclick ="useItem(3)" style="display:none">Un-Equip</button>
+				<button id = "sell3" type ="button" onclick ="sellItem(3)" style="display:inline">Sell for: 0g</button>
+				<p id ="description3"></p>
+			</div>
+			<div id="item4">
+				<p id ="name4" style="display:inline">No Item</p>
+				<p id ="quantity4" style="display:inline"></p>
+				<button id = "use4" type ="button" onclick ="useItem(4)" style="display:none">Use</button>
+				<button id = "equip4" type ="button" onclick ="useItem(4)" style="display:none">Equip</button>
+				<button id = "unequip4" type ="button" onclick ="useItem(4)" style="display:none">Un-Equip</button>
+				<button id = "sell4" type ="button" onclick ="sellItem(4)" style="display:inline">Sell for: 0g</button>
+				<p id ="description4"></p>
+			</div>
+			<div id="item5">
+				<p id ="name5" style="display:inline">No Item</p>
+				<p id ="quantity5" style="display:inline"></p>
+				<button id = "use5" type ="button" onclick ="useItem(5)" style="display:none">Use</button>
+				<button id = "equip5" type ="button" onclick ="useItem(5)" style="display:none">Equip</button>
+				<button id = "unequip5" type ="button" onclick ="useItem(5)" style="display:none">Un-Equip</button>
+				<button id = "sell5" type ="button" onclick ="sellItem(5)" style="display:inline">Sell for: 0g</button>
+				<p id ="description5"></p>
+			</div>
+		</div>
+		
+		<!-- Shop Divs -->
+		<div id ="shopInterface" style = "display:none">
+			<p id ="gold"></p>
+			<div id ="potions">
+				<p style="display:inline">Potion</p>
+				<button type ="button" onclick="subtractPotion()">-</button>
+				<p id ="potionQuantity" style="display:inline"> 0 </p>
+				<button type ="button" onclick="addPotion()">+</button>
+				<button type ="button" onclick="buyPotion()">Buy</button>
+				<p id ="potionCost" style="display:inline"> 0g </p>
+				<p style="display:inline"> / Heal Character for 50 HP</p>
+			</div>
+		</div>
+		
+		<!-- My Javascript -->
+		<script>
+			var name;
+			var gameLocation = "battle";
+			var currentHP = 50;
+			var maxHP = 50;
+			var currentEXP = 0;
+			var maxEXP = 10;
+			var gold = 0;
+			var level = 1;
+			var enemyNumber = 1;
+			var yourDamage = 20;
+			var enemyHealth, enemyDamage;
+			var additionalEnemyHealth = 0;
+			var additionalEnemyDamage = 0;
+			var fighting = false;
+			var potionNumber = 0;
+			var potionCost = 0;
+			var inventorySpace = ["empty","empty","empty","empty","empty"];
+			var inventorySpaceQuantity = [0,0,0,0,0];
+			var inventoryItemType = ["none","none","none","none","none"];
+			var inventorySellPrice = [0,0,0,0,0];
+			
+			//My display functions
+			function displayNameTitle(){
+				document.getElementById("nameTitle").innerHTML = name + "'s Adventure!";
+			}
+			function displayHP(){
+			
+				document.getElementById("HP").innerHTML = "HP: " + currentHP + "/" + maxHP;
+			}
+			function displayEXP(){
+				document.getElementById("EXP").innerHTML = "EXP: " + currentEXP + "/" + maxEXP;
+			}
+			function displayGold(){
+				document.getElementById("gold").innerHTML = "Gold: " + gold + "g";
+			}
+			function displayLevel(){
+				document.getElementById("level").innerHTML = "Level " + level;
+			}
+			function displayDamage(){
+				document.getElementById("damage").innerHTML = "Damage " + Math.floor(yourDamage / 2) + "-" + Math.floor(yourDamage + (yourDamage / 2));;
+			}
+			function displayEnemyHP(){
+				document.getElementById("enemyHP").innerHTML = "HP Remaining: " + enemyHealth;
+			}
+			function displayEnemyDamage(){
+				document.getElementById("enemyDamage").innerHTML = "Damage: " + Math.floor(enemyDamage / 2) + "-" + Math.floor(enemyDamage + (enemyDamage / 2));
+			}
+			function displayPotionNumber(){
+				document.getElementById("potionQuantity").innerHTML = potionNumber;
+			}
+			function displayPotionCost(){
+				document.getElementById("potionCost").innerHTML = potionCost + "g";
+			}
+			function updateItemCount(itemNum){
+				var indexNum = itemNum - 1;
+				if(itemNum == 1){
+					document.getElementById("quantity1").innerHTML = "- Quantity: " + inventorySpaceQuantity[indexNum];
+				}
+				else if(itemNum == 2){
+					document.getElementById("quantity2").innerHTML = "- Quantity: " + inventorySpaceQuantity[indexNum];
+				}
+				else if(itemNum == 3){
+					document.getElementById("quantity3").innerHTML = "- Quantity: " + inventorySpaceQuantity[indexNum];
+				}
+				else if(itemNum == 4){
+					document.getElementById("quantity4").innerHTML = "- Quantity: " + inventorySpaceQuantity[indexNum];
+				}
+				else if(itemNum == 5){
+					document.getElementById("quantity5").innerHTML = "- Quantity: " + inventorySpaceQuantity[indexNum];
+				}
+			}
+			//My Battle function
+			function startBattle(){
+				document.getElementById("enemyBattle").style.display = "block";
+				document.getElementById("inBattleInterface").style.display = "block";
+				document.getElementById("nextBattle").style.display = "none";
+				document.getElementById("enemyNumber").innerHTML = "Battle " + enemyNumber;
+				enemyNumber ++;
+				fighting = true;
+				//Sets enemy stats based on your level
+				enemyHealth = (level * 20) + 20 + additionalEnemyHealth;
+				enemyDamage = (level * 5) + 5 + additionalEnemyDamage;
+				displayEnemyHP();
+				displayEnemyDamage();
+			}
+			function endBattle(){
+				document.getElementById("nextBattle").style.display = "block";
+				document.getElementById("enemyBattle").style.display = "none";
+				document.getElementById("inBattleInterface").style.display = "none";
+				additionalEnemyHealth += 3;
+				additionalEnemyDamage += 1;
+				fighting = false;
+			}
+			//My in battle functions
+			function attack(){
+				var damageThisAttack = Math.floor((Math.random()* yourDamage)+ (yourDamage / 2));
+				var enemyDamageThisAttack = Math.floor((Math.random()* enemyDamage)+ (enemyDamage / 2));
+				enemyHealth -= damageThisAttack;
+				if(enemyHealth > 0){
+					alert("You did " + damageThisAttack + " damage!");
+					displayEnemyHP();
+				}
+				if(enemyHealth <= 0){
+					alert("You did " + damageThisAttack + " damage! You have defeated the enemy.");
+					getGold();
+					getItem();
+					getEXP();
+					endBattle();
+				}
+				else{
+					currentHP -= enemyDamageThisAttack;
+					alert("You took " + enemyDamageThisAttack + " damage!");
+					displayHP();
+					if(currentHP <= 0){
+						death();
+					}
+				}
+			}
+			function flee(){
+				var flee = Math.random();
+				if(flee < 0.50){
+					endBattle();
+				}
+				else{
+					var enemyDamageThisAttack = Math.floor((Math.random()* enemyDamage)+ (enemyDamage / 2));
+					currentHP -= enemyDamageThisAttack;
+					alert("You failed to flee. You took " + enemyDamageThisAttack + " damage!")
+					displayHP();
+					if(currentHP <= 0){
+						death();
+					}
+				}
+			}
+			//My start game function
+			function getName(){
+				var userInput = document.getElementById("form1");
+				name = userInput.elements["name"].value;
+				//Gets rid of name entry, brings up battle interface
+				document.getElementById("nameForm").style.display = "none";
+				document.getElementById("interface").style.display = "block";
+				document.getElementById("battleInterface").style.display = "block";
+				document.getElementById("nextBattle").style.display = "block";
+				displayNameTitle();
+				displayHP();
+				displayEXP();
+				displayLevel();
+				displayDamage();
+			}
+			//My interface switch functions
+			function toBattle(){
+				if(gameLocation === "battle"){
+				}
+				else{
+					gameLocation = "battle";
+					//Takes down what isn't needed and brings up what is
+					document.getElementById("battleInterface").style.display = "block";
+					document.getElementById("inventoryInterface").style.display = "none";
+					document.getElementById("shopInterface").style.display = "none";
+				}
+			}
+			function toInventory(){
+				if(gameLocation === "inventory"){
+				}
+				else{
+					gameLocation = "inventory";
+					document.getElementById("inventoryInterface").style.display = "block";
+					document.getElementById("battleInterface").style.display = "none";
+					document.getElementById("shopInterface").style.display = "none";
+				}
+			}
+			function toShop(){
+				if(gameLocation === "shop" || fighting){
+				}
+				else{
+					gameLocation = "shop";
+					document.getElementById("shopInterface").style.display = "block";
+					document.getElementById("battleInterface").style.display = "none";
+					document.getElementById("inventoryInterface").style.display = "none";
+					
+					displayGold();
+				}
+			}
+			//This function deals with the player dying
+			function death(){
+				currentHP = 1;
+				displayHP();
+			}
+			//This function deals with gold drops
+			function getGold(){
+				var goldObtained = Math.floor((Math.random()* Math.pow(level,2))+1);
+				alert("You have obtained " + goldObtained + " gold.");
+				gold += goldObtained;
+			}
+			//This function deals with item drops
+			function getItem(){
+				var itemObtained = Math.floor(Math.random() * 8)+1;
+				//Potion drop
+				if(itemObtained === 1){
+					alert("You have obtained a potion!");
+					addToInventory(findInventorySpace("Potion","consumable"),"Potion",1,"consumable",1,"Heal yourself for 50HP");
+				}
+				//Sword drop
+				else if(itemObtained === 2){
+					alert("You have obtained a sword!");
+					addToInventory(findInventorySpace("Sword","unequipped"),"Sword",1,"unequipped",level * 5,"Level " + level + " Sword - " + "Damage: " + level * 5);
+				}
+				//Armour drop
+				else if(itemObtained === 3){
+					alert("You have obtained some armour!");
+					addToInventory(findInventorySpace("Armour","unequipped"),"Armour",1,"unequipped",level * 5,"Level " + level + " Armour - " + "Health: " + level * 20);
+				}
+				//No drop
+				else{
+				}
+			}
+			//This function deals with exp gains
+			function getEXP(){
+				var ExpGained = Math.floor((Math.random()* (Math.pow(level, 3) + 5))+ (Math.pow(level, 3) + 5));
+				currentEXP += ExpGained;
+				displayEXP();
+				if(currentEXP >= maxEXP){
+					levelUp();
+				}
+			}
+			//This function deals with character leveling up
+			function levelUp(){
+				alert("You have leveled up! You health has been healed to full!");
+				level ++;
+				currentEXP -= maxEXP;
+				maxEXP = (Math.pow(level, 4) + 25); 
+				yourDamage += level;
+				maxHP += level * 4;
+				currentHP = maxHP;
+				displayLevel();
+				displayEXP();
+				displayHP();
+				displayDamage();
+			}
+			//These functions deal with potions in the shop
+			function subtractPotion(){
+				if(potionNumber > 0){
+					potionNumber --;
+					potionCost -= 2;
+					displayPotionNumber();
+					displayPotionCost();
+				}
+			}
+			function addPotion(){
+				if(potionNumber < 9){
+					potionNumber ++;
+					potionCost += 2;
+					displayPotionNumber();
+					displayPotionCost();
+				}
+			}
+			function buyPotion(){
+				if(findInventorySpace("Potion","consumable") == 0){
+					alert("Sorry, your inventory is full!");
+				}
+				else if(potionCost <= gold){
+					gold -= potionCost;
+					displayGold();
+					addToInventory(findInventorySpace("Potion","consumable"),"Potion",potionNumber,"consumable",1,"Heal yourself for 50HP");
+				}
+			}
+			//This function finds which space to use of the inventory
+			function findInventorySpace(item, type){
+				if(type == "consumable"){
+					for(var i = 0; i < inventorySpace.length; i++){
+						if(inventorySpace[i] == item){
+							i++;
+							return i;
+						}
+					}
+					for(var i = 0; i < inventorySpace.length; i++){
+						if(inventorySpace[i] == "empty"){
+							i++;
+							return i;
+						}
+					}
+					return 0;
+				}
+				else{
+					for(var i = 0; i < inventorySpace.length; i++){
+						if(inventorySpace[i] == "empty"){
+							i++;
+							return i;
+						}
+					}
+					return 0;
+				}
+			}
+			//This function adds stuff to the inventory
+			function addToInventory(spaceNumber, item, quantity, type, sellPrice, description){
+				if(spaceNumber == 0){
+					alert("You did not receive the item because your inventory is full!");
+				}
+				else if(spaceNumber == 1){
+					inventorySpaceQuantity[0] += quantity;
+					inventorySpace[0] = item;
+					inventoryItemType[0] = type;
+					inventorySellPrice[0] = sellPrice;
+					document.getElementById("name1").innerHTML = item;
+					document.getElementById("quantity1").innerHTML = "- Quantity: " + inventorySpaceQuantity[0];
+					document.getElementById("sell1").innerHTML = "Sell for: " + sellPrice + "g";
+					document.getElementById("description1").innerHTML = "Description: " + description;
+					if(type == "consumable"){
+						document.getElementById("use1").style.display = "inline";
+					}
+					else if(type == "unequipped"){
+						document.getElementById("equip1").style.display = "inline";
+					}
+					
+				}
+				else if(spaceNumber == 2){
+					inventorySpaceQuantity[1] += quantity;
+					inventorySpace[1] = item;
+					inventoryItemType[1] = type;
+					inventorySellPrice[1] = sellPrice;
+					document.getElementById("name2").innerHTML = item;
+					document.getElementById("quantity2").innerHTML = "- Quantity: " + inventorySpaceQuantity[1];
+					document.getElementById("sell2").innerHTML = "Sell for: " + sellPrice + "g";
+					document.getElementById("description2").innerHTML = "Description: " + description;
+					if(type == "consumable"){
+						document.getElementById("use2").style.display = "inline";
+					}
+					else if(type == "unequipped"){
+						document.getElementById("equip2").style.display = "inline";
+					}
+				}
+				else if(spaceNumber == 3){
+					inventorySpaceQuantity[2] += quantity;
+					inventorySpace[2] = item;
+					inventoryItemType[2] = type;
+					inventorySellPrice[2] = sellPrice;
+					document.getElementById("name3").innerHTML = item;
+					document.getElementById("quantity3").innerHTML = "- Quantity: " + inventorySpaceQuantity[2];
+					document.getElementById("sell3").innerHTML = "Sell for: " + sellPrice + "g";
+					document.getElementById("description3").innerHTML = "Description: " + description;
+					if(type == "consumable"){
+						document.getElementById("use3").style.display = "inline";
+					}
+					else if(type == "unequipped"){
+						document.getElementById("equip3").style.display = "inline";
+					}
+				}
+				else if(spaceNumber == 4){
+					inventorySpaceQuantity[3] += quantity;
+					inventorySpace[3] = item;
+					inventoryItemType[3] = type;
+					inventorySellPrice[3] = sellPrice;
+					document.getElementById("name4").innerHTML = item;
+					document.getElementById("quantity4").innerHTML = "- Quantity: " + inventorySpaceQuantity[3];
+					document.getElementById("sell4").innerHTML = "Sell for: " + sellPrice + "g";
+					document.getElementById("description4").innerHTML = "Description: " + description;
+					if(type == "consumable"){
+						document.getElementById("use4").style.display = "inline";
+					}
+					else if(type == "unequipped"){
+						document.getElementById("equip4").style.display = "inline";
+					}
+				}
+				else if(spaceNumber == 5){
+					inventorySpaceQuantity[4] += quantity;
+					inventorySpace[4] = item;
+					inventoryItemType[4] = type;
+					inventorySellPrice[4] = sellPrice;
+					document.getElementById("name5").innerHTML = item;
+					document.getElementById("quantity5").innerHTML = "- Quantity: " + inventorySpaceQuantity[4];
+					document.getElementById("sell5").innerHTML = "Sell for: " + sellPrice + "g";
+					document.getElementById("description5").innerHTML = "Description: " + description;
+					if(type == "consumable"){
+						document.getElementById("use5").style.display = "inline";
+					}
+					else if(type == "unequipped"){
+						document.getElementById("equip5").style.display = "inline";
+					}
+				}
+			}
+			//These are the using/selling item functions
+			function useItem(itemNum){
+				var indexNum = itemNum - 1;
+				if(inventoryItemType[indexNum] == "consumable"){
+					if(inventorySpace[indexNum] == "Potion"){
+						currentHP += 50;
+						if(currentHP > maxHP){
+							currentHP = maxHP;
+						}
+						displayHP();
+					}
+					if(inventorySpaceQuantity[indexNum] == 1){
+						clearInventorySpace(itemNum);
+					}
+					else if(inventorySpaceQuantity[indexNum] > 0){
+						inventorySpaceQuantity[indexNum] --;
+						updateItemCount(itemNum);
+					}
+				}
+				else if(inventoryItemType[indexNum] == "unequipped"){
+					if(inventorySpace[indexNum] == "Sword"){
+						var alreadyEquipped = false;
+						var alreadyEquippedIndex;
+						for(var i = 0; i < inventorySpace.length;i++){
+							if(inventorySpace[i] == "Sword" && inventoryItemType[i] == "equipped"){
+								alreadyEquipped = true;
+								alreadyEquippedIndex = i;
+							}
+						}
+						//If Sword is already equipped
+						if(alreadyEquipped){
+							subtractSwordStats(alreadyEquippedIndex);
+							if(alreadyEquippedIndex == 0){
+								document.getElementById("equip1").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 1){
+								document.getElementById("equip2").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 2){
+								document.getElementById("equip3").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 3){
+								document.getElementById("equip4").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 4){
+								document.getElementById("equip5").style.display = "inline";
+							}	
+							inventoryItemType[alreadyEquippedIndex] = "unequipped";
+							addSwordStats(indexNum);
+							inventoryItemType[indexNum] = "equipped";
+						}
+						//If Sword is not already equipped
+						else{
+							addSwordStats(indexNum);
+							inventoryItemType[indexNum] = "equipped";
+						}
+					}
+					else if(inventorySpace[indexNum] == "Armour"){
+						var alreadyEquipped = false;
+						var alreadyEquippedIndex;
+						for(var i = 0; i < inventorySpace.length;i++){
+							if(inventorySpace[i] == "Armour" && inventoryItemType[i] == "equipped"){
+								alreadyEquipped = true;
+								alreadyEquippedIndex = i;
+							}
+						}
+						//If Armour is already equipped
+						if(alreadyEquipped){
+							subtractArmourStats(alreadyEquippedIndex);
+							if(alreadyEquippedIndex == 0){
+								document.getElementById("equip1").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 1){
+								document.getElementById("equip2").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 2){
+								document.getElementById("equip3").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 3){
+								document.getElementById("equip4").style.display = "inline";
+							}
+							else if(alreadyEquippedIndex == 4){
+								document.getElementById("equip5").style.display = "inline";
+							}	
+							inventoryItemType[alreadyEquippedIndex] = "unequipped";
+							addArmourStats(indexNum);
+							inventoryItemType[indexNum] = "equipped";
+						}
+						//If Armour is not already equipped
+						else{
+							addArmourStats(indexNum);
+							inventoryItemType[indexNum] = "equipped";	
+						}
+					}
+				}
+				//If you want to unequip the item
+				else if(inventoryItemType[indexNum] == "equipped"){
+					if(inventorySpace[indexNum] == "Sword"){
+						subtractSwordStats(indexNum);
+						inventoryItemType[indexNum] = "unequipped";
+						if(itemNum == 1){
+							document.getElementById("equip1").style.display = "inline";
+						}
+						else if(itemNum == 2){
+							document.getElementById("equip2").style.display = "inline";
+						}
+						else if(itemNum == 3){
+							document.getElementById("equip3").style.display = "inline";
+						}
+						else if(itemNum == 4){
+							document.getElementById("equip4").style.display = "inline";
+						}
+						else if(itemNum == 5){
+							document.getElementById("equip5").style.display = "inline";
+						}	
+					}
+					else if(inventorySpace[indexNum] == "Armour"){
+						subtractArmourStats(indexNum);
+						inventoryItemType[indexNum] = "unequipped";
+						if(itemNum == 1){
+							document.getElementById("equip1").style.display = "inline";
+						}
+						else if(itemNum == 2){
+							document.getElementById("equip2").style.display = "inline";
+						}
+						else if(itemNum == 3){
+							document.getElementById("equip3").style.display = "inline";
+						}
+						else if(itemNum == 4){
+							document.getElementById("equip4").style.display = "inline";
+						}
+						else if(itemNum == 5){
+							document.getElementById("equip5").style.display = "inline";
+						}	
+					}
+				}
+			}
+			function addSwordStats(indexNum){
+				if(indexNum == 0){
+					document.getElementById("equip1").style.display = "none";
+					document.getElementById("unequip1").style.display = "inline";
+				}
+				else if(indexNum == 1){
+					document.getElementById("equip2").style.display = "none";
+					document.getElementById("unequip2").style.display = "inline";
+				}
+				else if(indexNum == 2){
+					document.getElementById("equip3").style.display = "none";
+					document.getElementById("unequip3").style.display = "inline";
+				}
+				else if(indexNum == 3){
+					document.getElementById("equip4").style.display = "none";
+					document.getElementById("unequip4").style.display = "inline";
+				}
+				else if(indexNum == 4){
+					document.getElementById("equip5").style.display = "none";
+					document.getElementById("unequip5").style.display = "inline";
+				}
+				yourDamage += inventorySellPrice[indexNum];
+				displayDamage();
+			}
+			function subtractSwordStats(indexNum){
+				if(indexNum == 0){
+					document.getElementById("unequip1").style.display = "none";
+				}
+				else if(indexNum == 1){
+					document.getElementById("unequip2").style.display = "none";
+				}
+				else if(indexNum == 2){
+					document.getElementById("unequip3").style.display = "none";
+				}
+				else if(indexNum == 3){
+					document.getElementById("unequip4").style.display = "none";
+				}
+				else if(indexNum == 4){
+					document.getElementById("unequip5").style.display = "none";
+				}
+				yourDamage -= inventorySellPrice[indexNum];
+				displayDamage();
+			}
+			function addArmourStats(indexNum){
+				if(indexNum == 0){
+					document.getElementById("equip1").style.display = "none";
+					document.getElementById("unequip1").style.display = "inline";
+				}
+				else if(indexNum == 1){
+					document.getElementById("equip2").style.display = "none";
+					document.getElementById("unequip2").style.display = "inline";
+				}
+				else if(indexNum == 2){
+					document.getElementById("equip3").style.display = "none";
+					document.getElementById("unequip3").style.display = "inline";
+				}
+				else if(indexNum == 3){
+					document.getElementById("equip4").style.display = "none";
+					document.getElementById("unequip4").style.display = "inline";
+				}
+				else if(indexNum == 4){
+					document.getElementById("equip5").style.display = "none";
+					document.getElementById("unequip5").style.display = "inline";
+				}
+				maxHP += inventorySellPrice[indexNum] * 4;
+				displayHP();
+			}
+			function subtractArmourStats(indexNum){
+				if(indexNum == 0){
+					document.getElementById("unequip1").style.display = "none";
+				}
+				else if(indexNum == 1){
+					document.getElementById("unequip2").style.display = "none";
+				}
+				else if(indexNum == 2){
+					document.getElementById("unequip3").style.display = "none";
+				}
+				else if(indexNum == 3){
+					document.getElementById("unequip4").style.display = "none";
+				}
+				else if(indexNum == 4){
+					document.getElementById("unequip5").style.display = "none";
+				}
+				maxHP -= inventorySellPrice[indexNum] * 4;
+				if(currentHP > maxHP){
+					currentHP = maxHP;
+				}
+				displayHP()
+			}
+			
+			function sellItem(itemNum){
+				var indexNum = itemNum - 1;
+				gold += inventorySellPrice[indexNum];
+				if(inventorySpaceQuantity[indexNum] == 1){
+					clearInventorySpace(itemNum);
+				}
+				else if(inventorySpaceQuantity[indexNum] > 0){
+					inventorySpaceQuantity[indexNum] --;
+					updateItemCount(itemNum);
+				}
+			}
+			function clearInventorySpace(itemNum){
+				var indexNum = itemNum - 1;
+				if(inventorySpace[indexNum] == "Sword" && inventoryItemType[indexNum] == "equipped"){
+					subtractSwordStats(indexNum);
+				}
+				if(inventorySpace[indexNum] == "Armour" && inventoryItemType[indexNum] == "equipped"){
+					subtractArmourStats(indexNum);
+				}
+				inventorySpace[indexNum] = "empty";
+				inventorySpaceQuantity[indexNum] = 0;
+				inventoryItemType[indexNum] = "none";
+				inventorySellPrice[indexNum] = 0;
+				if(itemNum == 1){
+					document.getElementById("name1").innerHTML = "No Item";
+					document.getElementById("quantity1").innerHTML = "";
+					document.getElementById("use1").style.display = "none";
+					document.getElementById("equip1").style.display = "none";
+					document.getElementById("sell1").innerHTML = "Sell for: 0g";
+					document.getElementById("description1").innerHTML = "";
+				}
+				if(itemNum == 2){
+					document.getElementById("name2").innerHTML = "No Item";
+					document.getElementById("quantity2").innerHTML = "";
+					document.getElementById("use2").style.display = "none";
+					document.getElementById("equip2").style.display = "none";
+					document.getElementById("sell2").innerHTML = "Sell for: 0g";
+					document.getElementById("description2").innerHTML = "";
+				}
+				if(itemNum == 3){
+					document.getElementById("name3").innerHTML = "No Item";
+					document.getElementById("quantity3").innerHTML = "";
+					document.getElementById("use3").style.display = "none";
+					document.getElementById("equip3").style.display = "none";
+					document.getElementById("sell3").innerHTML = "Sell for: 0g";
+					document.getElementById("description3").innerHTML = "";
+				}
+				if(itemNum == 4){
+					document.getElementById("name4").innerHTML = "No Item";
+					document.getElementById("quantity4").innerHTML = "";
+					document.getElementById("use4").style.display = "none";
+					document.getElementById("equip4").style.display = "none";
+					document.getElementById("sell4").innerHTML = "Sell for: 0g";
+					document.getElementById("description4").innerHTML = "";
+				}
+				if(itemNum == 5){
+					document.getElementById("name5").innerHTML = "No Item";
+					document.getElementById("quantity5").innerHTML = "";
+					document.getElementById("use5").style.display = "none";
+					document.getElementById("equip5").style.display = "none";
+					document.getElementById("sell5").innerHTML = "Sell for: 0g";
+					document.getElementById("description5").innerHTML = "";
+				}	
+			}
+		</script>
+	</body>
+</html>
